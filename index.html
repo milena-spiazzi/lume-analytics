@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUME — Studio de Velas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@400;500&display=swap');
+
+:root{
+  --ink:#202020;
+  --muted:#777;
+  --line:#dedbd7;
+  --paper:#f8f5f9;
+  --warm:#eee6f1;
+  --accent:#cdbbd8;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--ink);background:#fff;font-family:"DM Sans",Arial,sans-serif}
+button{font:inherit}
+a{text-decoration:none;color:inherit}
+
+.topbar{
+  height:96px;border-bottom:1px solid var(--line);
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  padding:0 34px;background:#fff;position:sticky;top:0;z-index:30
+}
+.brand{text-align:center;letter-spacing:.26em;font-size:22px;font-weight:500}
+.brand span{display:block;font-size:10px;letter-spacing:.45em;margin-top:7px}
+.search,.cart{font-size:12px;letter-spacing:.08em}
+.search{justify-self:start;color:#555}
+.cart{justify-self:end;display:flex;gap:10px;align-items:center}
+.cart button,.currency{
+  border:1px solid var(--ink);background:#171717;color:#fff;
+  padding:12px 18px;letter-spacing:.14em;font-size:11px;cursor:pointer
+}
+.currency{background:#fff;color:var(--ink);border-color:var(--line);padding:9px 11px}
+
+.nav{
+  height:68px;border-bottom:1px solid var(--line);display:flex;
+  align-items:center;justify-content:center;gap:48px;font-size:12px;
+  letter-spacing:.14em;background:#fff;position:sticky;top:96px;z-index:29
+}
+.nav a{color:#555}
+.nav a:hover{color:#111}
+
+.promo{
+  display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line);
+  min-height:74px;text-align:center
+}
+.promo div{padding:14px;border-right:1px solid var(--line)}
+.promo div:last-child{border-right:0}
+.promo strong{display:block;font-family:"Playfair Display",serif;font-size:16px;font-weight:400;letter-spacing:.03em}
+.promo span{display:block;margin-top:7px;font-size:10px;letter-spacing:.16em;color:#777}
+
+.hero{
+  min-height:700px;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  background:
+    linear-gradient(90deg,rgba(92,69,108,.28),rgba(154,126,166,.14)),
+    url('https://images.unsplash.com/photo-1777107857764-bb72c0360e29?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=85&w=2200') center center / cover no-repeat;
+}
+.hero:before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 18% 80%,rgba(255,255,255,.6) 0 8%,transparent 9%),
+    radial-gradient(ellipse at 82% 74%,rgba(255,255,255,.5) 0 10%,transparent 11%);
+  opacity:.8
+}
+.flowers{display:none;position:absolute;inset:0;pointer-events:none;opacity:.9}
+.stem{position:absolute;bottom:-40px;width:4px;background:#62675b;transform-origin:bottom;border-radius:5px}
+.flower{position:absolute;width:44px;height:44px;border-radius:50%;background:#6d2132;box-shadow:0 0 0 8px rgba(109,33,50,.10)}
+.hero-copy{position:relative;z-index:2;text-align:center;color:#fff;max-width:1050px;padding:70px 24px}
+.kicker{font-size:10px;letter-spacing:.25em;margin-bottom:22px;opacity:.94}
+.hero h1{
+  font-family:"Playfair Display",serif;font-size:clamp(88px,13vw,190px);
+  line-height:.82;font-weight:400;margin:0;letter-spacing:.015em;
+  text-shadow:0 3px 24px rgba(56,38,67,.22)
+}
+.hero p{font-family:"Playfair Display",serif;font-size:27px;margin:34px 0 40px;
+  letter-spacing:.01em;text-shadow:0 2px 14px rgba(56,38,67,.18)}
+.hero .cta{
+  display:inline-block;border:1px solid rgba(255,255,255,.9);padding:18px 48px;
+  font-size:11px;letter-spacing:.16em;color:#fff;background:rgba(86,62,101,.20);
+  backdrop-filter:blur(3px)
+}
+.hero .cta:hover{background:#fff;color:#222}
+
+.section{padding:88px 5.5%}
+.section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:34px}
+.eyebrow{font-size:10px;letter-spacing:.22em;color:#777}
+.section h2{font-family:"Playfair Display",serif;font-weight:400;font-size:46px;margin:8px 0 0}
+.viewall{font-size:11px;letter-spacing:.16em;border-bottom:1px solid #222;padding-bottom:6px}
+
+.products{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.product{cursor:pointer}
+.product-image{
+  aspect-ratio:4/5;position:relative;overflow:hidden;
+  background-position:center;background-size:cover;background-repeat:no-repeat;
+  background-image:url('https://images.unsplash.com/photo-1667988145532-5c4c420678ec?auto=format&fit=crop&fm=jpg&q=85&w=1200');
+}
+.product:nth-child(2) .product-image{background-image:url('https://images.unsplash.com/photo-1563148686-5ee4a1501985?auto=format&fit=crop&fm=jpg&q=85&w=1200');}
+.product:nth-child(3) .product-image{background-image:url('https://images.unsplash.com/photo-1563148686-5ee4a1501985?auto=format&fit=crop&fm=jpg&q=85&w=1200&crop=faces');}
+.product:nth-child(4) .product-image{background-image:url('https://images.unsplash.com/photo-1667988145532-5c4c420678ec?auto=format&fit=crop&fm=jpg&q=85&w=1200&crop=faces');}
+.product-image:before,.product-image:after{display:none}
+.product-info{padding:15px 2px 0}
+.product-info h3{font-family:"Playfair Display",serif;font-size:20px;font-weight:400;margin:0 0 7px}
+.product-info p{font-size:11px;color:#777;margin:0}
+.price{margin-top:9px;font-size:12px}
+
+.story{
+  background:var(--paper);display:grid;grid-template-columns:1.1fr .9fr;min-height:560px
+}
+.story-image{
+  min-height:560px;
+  background:url('https://images.unsplash.com/photo-1563148686-5ee4a1501985?auto=format&fit=crop&fm=jpg&q=85&w=1200') center center / cover no-repeat;
+  position:relative;overflow:hidden
+}
+.story-image:after{display:none}
+.story-copy{padding:82px 10%;display:flex;flex-direction:column;justify-content:center}
+.story-copy h2{font-family:"Playfair Display",serif;font-weight:400;font-size:54px;line-height:1.02;margin:12px 0 22px}
+.story-copy p{color:#666;line-height:1.8;max-width:520px;font-size:14px}
+.line-btn{margin-top:20px;align-self:flex-start;border:0;border-bottom:1px solid #222;background:transparent;padding:0 0 7px;letter-spacing:.14em;font-size:10px;cursor:pointer}
+
+.quiz{
+  text-align:center;padding:100px 20px;background:#f2ede7
+}
+.quiz h2{font-family:"Playfair Display",serif;font-size:52px;font-weight:400;margin:10px 0 15px}
+.quiz p{color:#666}
+.quiz-grid{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:30px}
+.quiz button{background:#fff;border:1px solid #d9d2cb;padding:15px 22px;cursor:pointer;font-size:11px;letter-spacing:.1em}
+.quiz button:hover{border-color:#222}
+#quizResult{margin-top:26px;font-family:"Playfair Display",serif;font-size:22px;min-height:28px}
+
+.footer{border-top:1px solid var(--line);padding:45px 5.5%;display:flex;justify-content:space-between;font-size:11px;color:#777;letter-spacing:.08em}
+.footer strong{color:#222;font-family:"Playfair Display",serif;font-size:20px;font-weight:400}
+
+.drawer{
+  position:fixed;right:0;top:0;height:100%;width:min(430px,94vw);background:#fff;
+  z-index:60;transform:translateX(100%);transition:.3s;box-shadow:-20px 0 50px rgba(0,0,0,.12);
+  padding:30px;overflow:auto
+}
+.drawer.open{transform:translateX(0)}
+.drawer h2{font-family:"Playfair Display",serif;font-size:34px;font-weight:400}
+.close{float:right;border:0;background:none;font-size:25px;cursor:pointer}
+.cart-item{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:16px 0;font-size:13px}
+.checkout{width:100%;margin-top:25px;background:#171717;color:#fff;border:0;padding:16px;letter-spacing:.15em;font-size:11px;cursor:pointer}
+.empty{color:#888;font-size:13px;margin-top:35px}
+
+.modal{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:70;
+  align-items:center;justify-content:center;padding:20px
+}
+.modal.open{display:flex}
+.modal-card{background:#fff;width:min(880px,96vw);max-height:90vh;overflow:auto;display:grid;grid-template-columns:1fr 1fr}
+.modal-photo{
+  min-height:500px;
+  background:url('https://images.unsplash.com/photo-1667988145532-5c4c420678ec?auto=format&fit=crop&fm=jpg&q=85&w=1200') center center / cover no-repeat;
+}
+.modal-copy{padding:55px 45px}
+.modal-copy h2{font-family:"Playfair Display",serif;font-size:43px;font-weight:400}
+.modal-copy p{color:#666;line-height:1.8}
+.modal-copy .buy{margin-top:30px;width:100%;padding:16px;border:0;background:#171717;color:#fff;letter-spacing:.14em;font-size:11px;cursor:pointer}
+
+@media(max-width:800px){
+ .topbar{height:78px;padding:0 16px}.brand{font-size:17px}.search{display:none}
+ .nav{top:78px;height:55px;gap:20px;overflow:auto;justify-content:flex-start;padding:0 18px;white-space:nowrap}
+ .promo{grid-template-columns:1fr}.promo div{border-right:0;border-bottom:1px solid var(--line)}
+ .hero{min-height:610px}.hero h1{font-size:76px}.hero p{font-size:20px}
+ .products{grid-template-columns:repeat(2,1fr)}
+ .story{grid-template-columns:1fr}.story-image{min-height:360px}
+ .story-copy{padding:60px 8%}
+ .modal-card{grid-template-columns:1fr}.modal-photo{min-height:320px;background-position:center}
+ .footer{display:block}.footer div+div{margin-top:20px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="search" onclick="searchProducts()" style="cursor:pointer">⌕ &nbsp; Search</div>
+  <div class="brand">LUME<span>STUDIO</span></div>
+  <div class="cart">
+    <button onclick="openCart()">CART (<span id="cartCount">0</span>)</button>
+    <span class="currency">BRL</span>
+  </div>
+</header>
+
+<nav class="nav">
+  <a href="#shop">SHOP +</a>
+  <a href="#sets" onclick="track('navigation_click',{destination:'gift_sets'})">GIFT SETS</a>
+  <a href="#quiz">DISCOVERY KIT</a>
+  <a href="#subscriptions" onclick="track('navigation_click',{destination:'subscriptions'})">SUBSCRIPTIONS</a>
+  <a href="#contact">CONTACT</a>
+  <a href="#about">ABOUT +</a>
+</nav>
+
+<section class="promo">
+  <div><strong>ATÉ 20% OFF</strong><span>SHOP NOW</span></div>
+  <div><strong>AROMA DO MÊS</strong><span>DESCUBRA AGORA</span></div>
+  <div><strong>PRESENTEIE COM LUME</strong><span>SHOP NOW</span></div>
+</section>
+
+<section class="hero">
+  <div class="flowers">
+    <i class="stem" style="left:8%;height:62%;transform:rotate(-9deg)"></i>
+    <i class="stem" style="left:22%;height:73%;transform:rotate(10deg)"></i>
+    <i class="stem" style="left:38%;height:77%;transform:rotate(-3deg)"></i>
+    <i class="stem" style="left:61%;height:78%;transform:rotate(5deg)"></i>
+    <i class="stem" style="left:77%;height:66%;transform:rotate(-7deg)"></i>
+    <i class="stem" style="left:91%;height:72%;transform:rotate(10deg)"></i>
+    <i class="flower" style="left:4%;bottom:48%"></i>
+    <i class="flower" style="left:28%;bottom:63%;background:#fff;box-shadow:0 0 0 10px rgba(255,255,255,.16)"></i>
+    <i class="flower" style="left:72%;bottom:59%;background:#5a1828"></i>
+    <i class="flower" style="left:89%;bottom:52%;background:#7b2639"></i>
+  </div>
+  <div class="hero-copy">
+    <div class="kicker">LUME STUDIO · HOME FRAGRANCE</div>
+    <h1>LUME</h1>
+    <p>Seu próximo ritual começa aqui.</p>
+    <a class="cta" href="#shop" onclick="track('hero_cta_click',{cta_name:'shop_all_candles'})">SHOP ALL CANDLES</a>
+  </div>
+</section>
+
+<section class="section" id="shop">
+  <div class="section-head">
+    <div><div class="eyebrow">THE COLLECTION</div><h2>Our candles</h2></div>
+    <a class="viewall" href="#shop">VIEW ALL</a>
+  </div>
+  <div class="products" id="products"></div>
+</section>
+
+
+<section class="section" id="sets" style="padding-top:35px;padding-bottom:55px">
+  <div class="section-head">
+    <div><div class="eyebrow">GIFTING</div><h2>Gift sets</h2></div>
+    <a class="viewall" href="#shop">SHOP CANDLES</a>
+  </div>
+  <p style="max-width:650px;color:#666;line-height:1.8;font-size:14px">
+    Combinações fictícias para você estudar jornadas de descoberta, consideração e compra no GA4.
+  </p>
+</section>
+
+<section class="section" id="subscriptions" style="padding-top:35px;padding-bottom:75px;background:#faf9f7">
+  <div class="section-head">
+    <div><div class="eyebrow">LUME CLUB</div><h2>Subscriptions</h2></div>
+  </div>
+  <p style="max-width:650px;color:#666;line-height:1.8;font-size:14px">
+    Assinatura fictícia de velas para simular cliques, interesse e início de checkout.
+  </p>
+  <button class="line-btn" onclick="track('subscription_interest',{plan:'lume_club'})">I'M INTERESTED</button>
+</section>
+
+<section class="story" id="about">
+  <div class="story-image"></div>
+  <div class="story-copy">
+    <div class="eyebrow">THE LUME STORY</div>
+    <h2>A little ritual for every room.</h2>
+    <p>LUME cria velas perfumadas para transformar pequenos momentos do dia em experiências sensoriais. Cada aroma foi pensado para acompanhar um estado de espírito — relaxar, acolher, energizar ou simplesmente desacelerar.</p>
+    <button class="line-btn" onclick="track('about_click')">DISCOVER OUR STORY</button>
+  </div>
+</section>
+
+<section class="quiz" id="quiz">
+  <div class="eyebrow">DISCOVERY KIT</div>
+  <h2>Find your scent.</h2>
+  <p>O que você quer sentir hoje?</p>
+  <div class="quiz-grid">
+    <button onclick="answerQuiz('relaxar')">RELAXAR</button>
+    <button onclick="answerQuiz('energia')">TER ENERGIA</button>
+    <button onclick="answerQuiz('acolher')">ACOLHER</button>
+    <button onclick="answerQuiz('sofisticar')">SOFISTICAR</button>
+  </div>
+  <div id="quizResult"></div>
+</section>
+
+<footer class="footer" id="contact">
+  <div><strong>LUME</strong><br><br>Studio de velas e aromas.</div>
+  <div>INSTAGRAM &nbsp; · &nbsp; CONTACT &nbsp; · &nbsp; FAQ<br><span style="font-size:9px;color:#999">Fotos ilustrativas: Unsplash</span></div>
+</footer>
+
+<aside class="drawer" id="cartDrawer">
+  <button class="close" onclick="closeCart()">×</button>
+  <div class="eyebrow">YOUR BAG</div>
+  <h2>Cart</h2>
+  <div id="cartItems"></div>
+  <button class="checkout" onclick="checkout()">CONTINUAR PARA CHECKOUT</button>
+</aside>
+
+<div class="modal" id="productModal" onclick="if(event.target===this)closeProduct()">
+  <div class="modal-card">
+    <div class="modal-photo"></div>
+    <div class="modal-copy">
+      <button class="close" onclick="closeProduct()">×</button>
+      <div class="eyebrow">LUME CANDLE</div>
+      <h2 id="modalName"></h2>
+      <div id="modalPrice" class="price"></div>
+      <p id="modalDescription"></p>
+      <button class="buy" onclick="addFromModal()">ADD TO CART</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  // GA4: replace G-XXXXXXXXXX with your Measurement ID.
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+const PRODUCTS=[
+ {id:'lavanda-baunilha',name:'Lavanda & Baunilha',price:69.90,desc:'Um aroma cremoso e relaxante, pensado para desacelerar o fim do dia.'},
+ {id:'capim-limao',name:'Capim-limão',price:64.90,desc:'Fresco, cítrico e luminoso. Uma escolha para começar o dia com energia.'},
+ {id:'flor-algodao',name:'Flor de Algodão',price:72.90,desc:'Leve e acolhedor, com sensação de roupa limpa e casa tranquila.'},
+ {id:'sandalo',name:'Sândalo',price:79.90,desc:'Amadeirado e sofisticado, criado para momentos mais intimistas.'}
+];
+let cart=[],selectedProduct=null;
+
+function brl(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function track(name,params={}){
+  if(typeof gtag==='function') gtag('event',name,params);
+  console.log('[GA4]',name,params);
+}
+
+function searchProducts(){
+  const term = prompt('O que você está procurando?');
+  if(term===null) return;
+  track('search',{search_term:term});
+  const normalized = term.trim().toLowerCase();
+  if(!normalized){ renderProducts(); return; }
+  const filtered = PRODUCTS.filter(p => (p.name+' '+p.desc).toLowerCase().includes(normalized));
+  const container = document.getElementById('products');
+  if(!filtered.length){
+    container.innerHTML = '<p style="grid-column:1/-1;color:#777">Nenhum produto encontrado.</p>';
+    return;
+  }
+  container.innerHTML = filtered.map((p)=>`
+    <article class="product" onclick="openProduct('${p.id}')">
+      <div class="product-image"></div>
+      <div class="product-info"><h3>${p.name}</h3><p>180g · vegetal · perfumada</p><div class="price">${brl(p.price)}</div></div>
+    </article>`).join('');
+  document.getElementById('shop').scrollIntoView({behavior:'smooth'});
+}
+function renderProducts(){
+  document.getElementById('products').innerHTML=PRODUCTS.map((p,i)=>`
+    <article class="product" onclick="openProduct('${p.id}')">
+      <div class="product-image">${i===0?'<span class="tag">BESTSELLER</span>':''}</div>
+      <div class="product-info"><h3>${p.name}</h3><p>180g · vegetal · perfumada</p><div class="price">${brl(p.price)}</div></div>
+    </article>`).join('');
+}
+function openProduct(id){
+  selectedProduct=PRODUCTS.find(p=>p.id===id);
+  document.getElementById('modalName').textContent=selectedProduct.name;
+  document.getElementById('modalPrice').textContent=brl(selectedProduct.price);
+  document.getElementById('modalDescription').textContent=selectedProduct.desc;
+  document.getElementById('productModal').classList.add('open');
+  track('view_item',{currency:'BRL',value:selectedProduct.price,items:[{item_id:selectedProduct.id,item_name:selectedProduct.name,price:selectedProduct.price}]});
+}
+function closeProduct(){document.getElementById('productModal').classList.remove('open')}
+function addFromModal(){addToCart(selectedProduct.id);closeProduct()}
+function addToCart(id){
+  const p=PRODUCTS.find(x=>x.id===id);
+  cart.push(p);
+  document.getElementById('cartCount').textContent=cart.length;
+  track('add_to_cart',{currency:'BRL',value:p.price,items:[{item_id:p.id,item_name:p.name,price:p.price,quantity:1}]});
+}
+function openCart(){
+  renderCart();document.getElementById('cartDrawer').classList.add('open');
+  track('view_cart',{currency:'BRL',value:cart.reduce((s,p)=>s+p.price,0),items:cart.map(p=>({item_id:p.id,item_name:p.name,price:p.price,quantity:1}))});
+}
+function closeCart(){document.getElementById('cartDrawer').classList.remove('open')}
+function renderCart(){
+  const el=document.getElementById('cartItems');
+  if(!cart.length){el.innerHTML='<div class="empty">Seu carrinho está vazio.</div>';return}
+  el.innerHTML=cart.map((p,i)=>`<div class="cart-item"><span>${p.name}</span><span>${brl(p.price)} <button onclick="removeItem(${i})" style="border:0;background:none;cursor:pointer">×</button></span></div>`).join('');
+}
+function removeItem(i){cart.splice(i,1);document.getElementById('cartCount').textContent=cart.length;renderCart()}
+function checkout(){
+  if(!cart.length)return;
+  const value=cart.reduce((s,p)=>s+p.price,0);
+  const items=cart.map(p=>({item_id:p.id,item_name:p.name,price:p.price,quantity:1}));
+  track('begin_checkout',{currency:'BRL',value,items});
+  const confirmed = confirm('Checkout fictício. Simular a confirmação do pedido?');
+  if(confirmed){
+    track('purchase',{
+      transaction_id:'LUME-'+Date.now(),
+      currency:'BRL',
+      value,
+      items
+    });
+    cart=[];
+    document.getElementById('cartCount').textContent='0';
+    renderCart();
+    alert('Pedido fictício confirmado. Nenhum pagamento foi realizado.');
+  }
+}
+function answerQuiz(intent){
+  const map={
+    relaxar:['Lavanda & Baunilha','lavanda-baunilha'],
+    energia:['Capim-limão','capim-limao'],
+    acolher:['Flor de Algodão','flor-algodao'],
+    sofisticar:['Sândalo','sandalo']
+  };
+  const [name,id]=map[intent];
+  document.getElementById('quizResult').textContent='Seu aroma: '+name;
+  track('select_aroma',{aroma_intention:intent,recommended_product:id});
+}
+renderProducts();
+
+// GA4 placeholder — replace G-XXXXXXXXXX with your Measurement ID.
+// <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+// <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+</script>
+</body>
+</html>
